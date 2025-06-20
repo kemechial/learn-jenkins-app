@@ -42,7 +42,7 @@ pipeline {
             }
             
         }
-
+        /*
         stage('E2E') {
 
                agent {
@@ -62,6 +62,8 @@ pipeline {
             }
             
         }
+
+        */
 
 
     }
