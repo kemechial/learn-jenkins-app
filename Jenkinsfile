@@ -101,11 +101,60 @@ pipeline {
                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
                    node_modules/.bin/netlify status
                    node_modules/.bin/netlify deploy --dir=build --no-build --json > output.json
-                   node_modules/.bin/node-jq -r '.deploy_url' output.json
-                '''
+                   '''
+                   //node_modules/.bin/node-jq -r '.deploy_url' output.json
+            script {
+
+               env.STAGING_URL = sh("node_modules/.bin/node-jq -r '.deploy_url' output.json", returnStdout: true).trim()
+
             }
+            
+            
+            
+            
+            }
+
+            
+            
         }
 
+            stage('Staging E2E') {
+                    agent {
+                        docker {
+                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            reuseNode true
+                        }
+                    }
+
+                    environment {
+                        //CI_ENVIRONMENT_URL ='https://melodious-toffee-353ea7.netlify.app'
+                        CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
+                    }
+
+                    steps {
+                        sh '''
+                            npx playwright test --reporter=html
+                        '''
+                    }
+                    post {
+                        always {
+                            publishHTML([
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: false,
+                                icon: '',
+                                keepAll: false,
+                                reportDir: 'playwright-report',
+                                reportFiles: 'index.html',
+                                reportName: 'Playwright E2E',
+                                reportTitles: '',
+                                useWrapperFileDirectly: true
+                            ])
+                        }
+                    }
+        }
+
+
+        /*
         stage('Approval'){
             steps {
                 timeout(15) {
@@ -116,7 +165,7 @@ pipeline {
         }
 
 
-
+        */
         stage('Deploy prod') {
             agent {
                 docker {
