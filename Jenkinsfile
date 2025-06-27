@@ -131,12 +131,13 @@ pipeline {
                             reuseNode true
                         }
                     }
-                    /*
+                    
                     environment {
                         //CI_ENVIRONMENT_URL ='https://melodious-toffee-353ea7.netlify.app'
-                        CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
+                        //CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
+                        CI_ENVIRONMENT_URL = "TO BE SET"
                     }
-                    */
+                    
                     steps {
                         sh '''
                             npm install netlify-cli node-jq
