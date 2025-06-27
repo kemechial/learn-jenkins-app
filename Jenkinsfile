@@ -85,7 +85,7 @@ pipeline {
 
             }
         }
-
+        /*
          stage('Deploy staging') {
             agent {
                 docker {
@@ -95,13 +95,13 @@ pipeline {
             }
             steps {
                 sh '''
-                   echo 'small change'
+                 echo 'small change'
                    npm install netlify-cli node-jq
                    node_modules/.bin/netlify --version
                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
                    node_modules/.bin/netlify status
                    node_modules/.bin/netlify deploy --dir=build --no-build --json > output.json
-                   '''
+                  '''
                    //node_modules/.bin/node-jq -r '.deploy_url' output.json
             script {
 
@@ -122,6 +122,7 @@ pipeline {
             
             
         }
+        */
 
             stage('Staging E2E') {
                     agent {
@@ -130,14 +131,20 @@ pipeline {
                             reuseNode true
                         }
                     }
-
+                    /*
                     environment {
                         //CI_ENVIRONMENT_URL ='https://melodious-toffee-353ea7.netlify.app'
                         CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
                     }
-
+                    */
                     steps {
                         sh '''
+                            npm install netlify-cli node-jq
+                            node_modules/.bin/netlify --version
+                            echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+                            node_modules/.bin/netlify status
+                            node_modules/.bin/netlify deploy --dir=build --no-build --json > output.json
+                            CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url' output.json)
                             npx playwright test --reporter=html
                         '''
                     }
