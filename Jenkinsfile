@@ -170,7 +170,8 @@ pipeline {
         }
 
 
-        */
+    
+
         stage('Deploy prod') {
             agent {
                 docker {
@@ -180,15 +181,18 @@ pipeline {
             }
             steps {
                 sh '''
-                   echo 'small change'
+                 echo 'small change'
                    npm install netlify-cli
                    node_modules/.bin/netlify --version
                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
                    node_modules/.bin/netlify status
                    node_modules/.bin/netlify deploy --prod --dir=build --no-build 
+                  
                 '''
             }
         }
+
+        */
 
 
         stage('Prod E2E') {
@@ -206,7 +210,14 @@ pipeline {
 
                     steps {
                         sh '''
-                            npx playwright test --reporter=html
+                             node --version
+                             echo 'small change'
+                             npm install netlify-cli
+                             node_modules/.bin/netlify --version
+                             echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+                             node_modules/.bin/netlify status
+                             node_modules/.bin/netlify deploy --prod --dir=build --no-build 
+                             npx playwright test --reporter=html
                         '''
                     }
                     post {
