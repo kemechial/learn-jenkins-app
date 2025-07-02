@@ -137,7 +137,8 @@ pipeline {
             stage('Staging E2E') {
                     agent {
                         docker {
-                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            //image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            image 'my-playwright'
                             reuseNode true
                         }
                     }
@@ -149,6 +150,7 @@ pipeline {
                     }
                     
                     steps {
+                        /*
                         sh '''
                             npm install netlify-cli node-jq
                             node_modules/.bin/netlify --version
@@ -157,6 +159,17 @@ pipeline {
                             node_modules/.bin/netlify deploy --dir=build --no-build --json > output.json
                             CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url' output.json)
                             npx playwright test --reporter=html
+                        '''
+                        */
+                        sh '''
+                             node --version
+                             netlify --version
+                             echo "Deploying to staging. Site ID: $NETLIFY_SITE_ID"
+                             netlify status
+                             netlify deploy --dir=build --no-build --json > output.json
+                             CI_ENVIRONMENT_URL=$(node-jq -r '.deploy_url' output.json)
+                             echo "Staging URL: $CI_ENVIRONMENT_URL"
+                             npx playwright test --reporter=html
                         '''
                     }
                     post {
